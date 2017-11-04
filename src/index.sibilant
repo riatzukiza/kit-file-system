@@ -1,0 +1,29 @@
+(include "kit/header")
+(import-namespace kit)
+
+
+(require!
+ (lit cond create extend mixin) "kit/js/util"
+ (lit Event-emitter) 'events
+
+ R 'ramda
+
+ Path 'path
+
+ 'assert 'chokidar 'fs)
+
+
+(include "./util")
+
+
+(include "./interfaces/node.sibilant"
+         "./interfaces/file.sibilant"
+         "./interfaces/directory.sibilant"
+         "./interfaces/system.sibilant"
+         )
+
+(export File-system)
+(assign exports.System File-system)
+
+(def exports.load (root-path)
+  ((create File-system) root-path))

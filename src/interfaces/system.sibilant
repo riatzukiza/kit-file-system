@@ -1,0 +1,60 @@
+
+(def-curried *discover-node  (path seq *tree  sys stats)
+  (.set *tree seq
+        (if (.is-directory stats)
+            ( (create Directory) path sys)
+            ( (create File) path sys))))
+
+(def *find-absolute-path (path root)
+  (Path.resolve  root path))
+
+(def-curried itterate (f file)
+  (if (is-dir file)
+      (.each file (itterate f))
+      (f file)))
+
+(define File-system Event-emitter
+
+  (root ".")
+
+  (init (root (*tree ((create Tree-map) ))))
+
+  (def-generic find (path *tree  root   )
+
+    (var rel-path (*find-absolute-path path root)
+         seq (tokenize rel-path )
+         node (find-value seq *tree)
+         sys this)
+
+    (if node
+        (.resolve Promise node)
+        (.then (stat rel-path)
+               (*discover-node rel-path seq *tree sys))))
+
+  (def-generic watch (path opts root )
+    (var sys this)
+    ;; file watching should be an entirely seperate system.
+    (print "watch method of File-system is pending depreciation")
+    (async-let ((node (.find sys path )))
+      (pipe chokidar
+            (.watch  node.path)
+            (on  'all (event-name changed-path stats)
+                 (async-let ((changed-node (.find sys (Path.relative root changed-path ) )))
+                   (.emit node event-name changed-node))))
+      node))
+
+  (def-generic insert (path root  ( type File ) (sys this))
+    (catch (.find sys path)
+      (pipe (seq (tokenize path))
+            (.reduce  fill-sub-dir [(Promise.resolve) "./"])
+            first
+            (then-do (.set-value ((create type) path sys)  )))))
+
+  (def-generic set (path v ( type File ) (sys this))
+    (pipe (.insert sys path null null type sys)
+          (.then (#-> (.set-value v)))))
+
+  (def-generic delete (path))
+
+  (def-generic each (f)
+    (.then (.find this ".") (itterate f))))
