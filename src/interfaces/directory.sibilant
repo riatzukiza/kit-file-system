@@ -1,7 +1,7 @@
 
-(specify Directory (extend FS-node))
 
-(describe Directory
+(define Directory FS-node
+
           (def-generic set (path value ( type File ) ))
 
           (def-generic get  (k fs path) (fs.find (Path.join path k)))

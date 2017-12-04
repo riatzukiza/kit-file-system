@@ -1,9 +1,9 @@
 
-(specify FS-node (extend Event-emitter.prototype))
 
-(def-description FS-node (path fs)
+(define FS-node  Event-emitter
 
-  (init  (.call Event-emitter this))
+  (init (path fs) (.call Event-emitter.init this))
+
   (gett stats (stat this.path))
 
   (gett name (Path.basename this.path))

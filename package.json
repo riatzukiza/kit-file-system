@@ -6,9 +6,9 @@
     },
     "dependencies": {
 
-        "kit": "git+ssh://riatzukiza@192.168.0.150:1250/H/gits/kit",
-        "kit-interface": "git+ssh://riatzukiza@192.168.0.150:1250/H/gits/kit-interface",
-        "kit-events": "git+ssh://riatzukiza@192.168.0.150:1250/H/gits/kit-events",
+        "kit": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit",
+        "kit-interface": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit-interface",
+        "kit-events": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit-events",
         "ramda": "*",
         "chokidar": "*"
     }

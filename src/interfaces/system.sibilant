@@ -1,4 +1,4 @@
-
+(import-namespace interface)
 (def-curried *discover-node  (path seq *tree  sys stats)
   (.set *tree seq
         (if (.is-directory stats)

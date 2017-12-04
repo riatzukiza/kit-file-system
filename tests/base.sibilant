@@ -1,0 +1,11 @@
+;;(require! Files "../index.js")
+(include "../src/index")
+
+(var tmp (.load Files-system "../tmp"))
+
+
+(pipe (.set tmp "./test.txt" "Butts")
+      (.then (-> (.find temp "test.txt")))
+      (.then (#-> (get 'string)))
+      (.then (aprint "the test file contained")))
+
