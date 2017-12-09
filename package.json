@@ -5,10 +5,10 @@
         "compile": "sibilant ./src/index.sibilant -o ./"
     },
     "dependencies": {
-
         "kit": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit",
         "kit-interface": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit-interface",
         "kit-events": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit-events",
+        "tree-kit":"git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/tree-kit",
         "ramda": "*",
         "chokidar": "*"
     }

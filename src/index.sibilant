@@ -11,13 +11,17 @@
 
  Path 'path
 
- 'assert 'chokidar 'fs)
+ 'assert 'chokidar 'fs
+ (lit Tree-map) "tree-kit")
+
 (load "kit-interface/header")
 (load "kit-events/header")
+
 (load "./interfaces/node.sibilant")
 (load "./interfaces/file.sibilant")
 (load "./interfaces/directory.sibilant")
 (load "./interfaces/system.sibilant")
+
 (load "./util")
 
 (export File-system)
@@ -29,4 +33,3 @@
 
 (assign exports.load File-system.load)
 
-(export load)
