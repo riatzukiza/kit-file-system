@@ -25,7 +25,7 @@
   (print "inserting temp directory")
   (pipe (.insert home "./temp" Directory)
         (.then (aprint "directory was inserted,deleting"))
-        (.then ))
+        (.then (#-> .remove)))
   ;; (pipe 
   ;;       (.then (aprint "temp directory created, creating children"))
   ;;       (.then (=> (temp)
