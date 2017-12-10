@@ -1,8 +1,9 @@
 {
     "name": "kit-filesystem",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "scripts": {
-        "compile": "sibilant ./src/index.sibilant -o ./"
+        "compile": "sibilant ./src/index.sibilant -o ./",
+        "test":"bash ./scripts/test.sh"
     },
     "dependencies": {
         "kit": "git+ssh://riatzukiza@aaron.kettlelogic.space:1250/H/gits/kit",

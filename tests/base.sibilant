@@ -1,11 +1,44 @@
 ;;(require! Files "../index.js")
-(include "../src/index")
+(include "kit/header")
+(import-namespace kit)
 
-(var tmp (.load Files-system "../tmp"))
+(require! (lit File-system Directory File) "../index"
+          'assert)
+(var home (.load File-system "./") )
+(var test-value "Butts")
 
 
-(pipe (.set tmp "./test.txt" "Butts")
-      (.then (-> (.find temp "test.txt")))
+(pipe (.set home  "./test.txt" test-value)
+      (.then (aprint "test file set"))
+      (.then (-> (.find home "test.txt")))
+      (.then (aprint "file found, checking value"))
       (.then (#-> (get 'string)))
-      (.then (aprint "the test file contained")))
+      (.then (=> (s)
+                 (assert (= s test-value)
+                         "file was not set with appropriate value"))))
+
+(def map-all (a f)
+  (Promise.all (.map a f)))
+
+(let (( test-directories ['a 'b 'c 'd 'e 'f 'g])
+      ( test-files ['t 'u 'v 'w 'x 'y 'z]))
+  (print "creating temp directory")
+  (.insert home "./temp" Directory)
+  ;; (pipe 
+  ;;       (.then (aprint "temp directory created, creating children"))
+  ;;       (.then (=> (temp)
+  ;;                  (map-all test-directories
+  ;;                           (=> (name)
+  ;;                               (.insert temp name Directory)))))
+  ;;       (.then (#-> (map-all
+  ;;                    (=> (child)
+  ;;                        (map-all test-files
+  ;;                                 (=> (name)
+  ;;                                     (.set child name name File)))))))
+  ;;       ;; (.then (=> (temp)
+  ;;       ;;            (map-all test-files
+  ;;       ;;                     (=> (name)
+  ;;       ;;                         (.insert temp name File)))))
+  ;;       )
+  )
 

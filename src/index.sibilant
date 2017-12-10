@@ -1,6 +1,9 @@
 (include "kit/header")
 (import-namespace kit)
 
+(macro load (...paths)
+       `(include ...@paths))
+
 (macro def-curried (name args ...body)
        `(loose-var @name (R.curry (lambda @args ...@body)) ))
 
@@ -14,15 +17,15 @@
  'assert 'chokidar 'fs
  (lit Tree-map) "tree-kit")
 
-(load "kit-interface/header")
-(load "kit-events/header")
+(include "kit-interface/header")
+(include "kit-events/header")
 
-(load "./interfaces/node.sibilant")
-(load "./interfaces/file.sibilant")
-(load "./interfaces/directory.sibilant")
-(load "./interfaces/system.sibilant")
+(include "./interfaces/node.sibilant")
+(include "./interfaces/file.sibilant")
+(include "./interfaces/directory.sibilant")
+(include "./interfaces/system.sibilant")
 
-(load "./util")
+(include "./util")
 
 (export File-system)
 

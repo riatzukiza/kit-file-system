@@ -7,42 +7,14 @@
 }).bind(this);
 
 
-;
+
+
 
 ;
-var Descriptions = {  };
 var R = require("ramda");
-var fmap = R.curry(((f, a) => {
-	
-  return a.map(f);
-
-}));
-var is = { 
-  string( v ){ 
-    
-      return typeof v === "string";
-    
-   }
- };
-is.empty__QUERY = (function is$empty__QUERY$(value) {
-  /* is.empty? node_modules/kit/inc/core/fp.sibilant:12:0 */
-
-  return 0 === value.length;
-});
-var athrow = (function athrow$(errType, message) {
-  /* athrow node_modules/kit/inc/core/fp.sibilant:14:0 */
-
-  return (() => {
-  	
-    return (new errType(message));
-  
-  });
-});
-var getValueOf = (function getValueOf$(o) {
-  /* get-value-of node_modules/kit/inc/core/fp.sibilant:17:0 */
-
-  return o.getValue();
-});
+var { 
+  Interface
+ } = require("kit-interface");
 var { 
   create,
   extend,
@@ -58,90 +30,26 @@ var {
   mixin
  } = require("kit/js/util"),
     R = require("ramda"),
-    { 
-  EventEmitter
- } = require("events"),
-    Path = require("path");
-var assert = require("assert"),
+    Path = require("path"),
+    assert = require("assert"),
     chokidar = require("chokidar"),
-    fs = require("fs");
-var testing__QUERY = true;
-var identity = (function identity$(a) {
-  /* identity src/index.sibilant:23:0 */
-
-  return a;
-});
-var setValue = R.curry(((v, o) => {
-	
-  return o.value = v;
-
-}));
-var reducePromise = R.curry(((f, a) => {
-	
-  return a.reduce(f, [ Promise.resolve(), "" ]);
-
-}));
-var timeout = (function timeout$(t) {
-  /* timeout node_modules/kit/inc/core/function-expressions.sibilant:23:8 */
-
-  return (new Promise(((success, fail) => {
-  	
-    var resolve = success,
-        reject = fail;
-    return setTimeout(success, t);
-  
-  })));
-});
-var onceThen = (function onceThen$(event, emitter) {
-  /* once-then src/index.sibilant:45:0 */
-
-  return (new Promise(((success, fail) => {
-  	
-    var resolve = success,
-        reject = fail;
-    return emitter.once(event, success);
-  
-  })));
-});
-var fmap = R.curry(((f, a) => {
-	
-  return a.map(f);
-
-}));
-var is = { 
-  string( v ){ 
-    
-      return typeof v === "string";
-    
-   }
- };
-is.empty__QUERY = (function is$empty__QUERY$(value) {
-  /* is.empty? src/index.sibilant:52:0 */
-
-  return 0 === value.length;
-});
-var athrow = (function athrow$(errType, message) {
-  /* athrow src/index.sibilant:55:0 */
-
-  return (() => {
-  	
-    return (new errType(message));
-  
-  });
-});
-var getValueOf = (function getValueOf$(o) {
-  /* get-value-of src/index.sibilant:58:0 */
-
-  return o.getValue();
-});
-var FSNode = extend(EventEmitter.prototype, { 
-  symbol:Symbol("FSNode")
- });
-Descriptions.FSNode = mixin({ 
+    fs = require("fs"),
+    { 
+  TreeMap
+ } = require("tree-kit");
+var { 
+  Interface
+ } = require("kit-interface");
+var { 
+  EventEmitter,
+  emit,
+  bubble
+ } = require("kit-events");
+var FSNode = EventEmitter.define("FSNode", { 
   init( path = this.path,fs = this.fs ){ 
     
       this.path = path;this.fs = fs;
-      EventEmitter.call(this);
+      EventEmitter.init.call(this);
       return this;
     
    },
@@ -160,11 +68,8 @@ Descriptions.FSNode = mixin({
       return fs.watch(path);
     
    }
- }, FSNode);
-var File = extend(FSNode, { 
-  symbol:Symbol("File")
  });
-mixin({ 
+var File = FSNode.define("File", { 
   get value(  ){ 
     
       return readFile(this.path);
@@ -236,21 +141,40 @@ mixin({
   pipe(  ){ 
     
    }
- }, File);
-console.log("Loading Directory interface file");
-var Directory = extend(FSNode, { 
-  symbol:Symbol("Directory")
  });
-mixin({ 
-  set( path = this.path,value = this.value,type = File ){ 
+exports.File = File;
+var Directory = FSNode.define("Directory", { 
+  set( rel = this.rel,value = this.value,type = File,fs = this.fs,path = this.path ){ 
+    
+      return fs.set(Path.join(rel, path), value, type);
     
    },
-  get( k = this.k,fs = this.fs,path = this.path ){ 
+  get( rel = this.rel,fs = this.fs,path = this.path ){ 
     
-      return fs.find(Path.join(path, k));
+      return fs.find(Path.join(path, rel));
     
    },
-  insert( path = this.path,type = File ){ 
+  setValue(  ){ 
+    
+      return mkdir(this.path).then(((nil) => {
+      	
+        return this;
+      
+      }));
+    
+   },
+  getValue(  ){ 
+    
+      return readdir(this.path).then(((nil) => {
+      	
+        return this;
+      
+      }));
+    
+   },
+  insert( rel = this.rel,type = File,fs = this.fs,path = this.path ){ 
+    
+      return fs.insert(Path.join(rel, path), type);
     
    },
   each( f = this.f,children = this.children ){ 
@@ -324,14 +248,167 @@ mixin({
       }));
     
    }
- }, Directory);
-var feach = R.curry(((f, a) => {
-	
-  return a.each(f);
+ });
+exports.Directory = Directory;
+var _discoverNode = R.curry((function(path, seq, _tree, sys, stats) {
+  /* src/index.sibilant:8:34 */
 
+  return _tree.set(seq, (function() {
+    if (stats.isDirectory()) {
+      return create(Directory)(path, sys);
+    } else {
+      return create(File)(path, sys);
+    }
+  }).call(this));
 }));
+var _findAbsolutePath = (function _findAbsolutePath$(path, root) {
+  /* *find-absolute-path src/interfaces/system.sibilant:8:0 */
+
+  return Path.resolve(root, path);
+});
+var itterate = R.curry((function(f, file) {
+  /* src/index.sibilant:8:34 */
+
+  return (function() {
+    if (isDir(file)) {
+      return file.each(itterate(f));
+    } else {
+      return f(file);
+    }
+  }).call(this);
+}));
+var FileSystem = EventEmitter.define("FileSystem", { 
+  root:".",
+  init( root = this.root,_tree = create(TreeMap)() ){ 
+    
+      this.root = root;this._tree = _tree;
+      return this;
+    
+   },
+  find( path = this.path,_tree = this._tree,root = this.root ){ 
+    
+      var relPath = _findAbsolutePath(path, root);
+      var seq = tokenize(relPath);
+      var node = findValue(seq, _tree),
+          sys = this;
+      return (function() {
+        if (node) {
+          return Promise.resolve(node);
+        } else {
+          return stat(relPath).then(_discoverNode(relPath, seq, _tree, sys));
+        }
+      }).call(this);
+    
+   },
+  watch( path = this.path,opts = this.opts,root = this.root ){ 
+    
+      var sys = this;
+      console.log("watch method of File-system is pending depreciation");
+      return Promise.all([ sys.find(path) ]).then((([ node ]) => {
+      	
+        chokidar.watch(node.path).on("all", ((eventName, changedPath, stats) => {
+        	
+          return Promise.all([ sys.find(Path.relative(root, changedPath)) ]).then((([ changedNode ]) => {
+          	
+            return node.emit(eventName, changedNode);
+          
+          }));
+        
+        })).once("error", ((err) => {
+        	
+          console.log("error on", "all", "of", "chokidar.watch(node.path)", "given", "eventName(changedPath, stats)");
+          return console.log(err);
+        
+        }));
+        return node;
+      
+      }));
+    
+   },
+  insert( path = this.path,type = File,root = this.root,sys = this ){ 
+    
+      return sys.find(path).catch(((e) => {
+      	
+        return tokenize(path).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
+        	
+          return create(type)(path, sys).setValue();
+        
+        }));
+      
+      }));
+    
+   },
+  set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){ 
+    
+      return sys.insert(path, root).then((function() {
+        /* src/interfaces/system.sibilant:55:17 */
+      
+        return arguments[0].setValue(v);
+      }));
+    
+   },
+  delete( path = this.path ){ 
+    
+   },
+  each( f = this.f ){ 
+    
+      return this.find(".").then(itterate(f));
+    
+   }
+ });
+var testing__QUERY = true;
+var is = { 
+  string( v ){ 
+    
+      return typeof v === "string";
+    
+   },
+  empty( value ){ 
+    
+      return 0 === value.length;
+    
+   }
+ };
+var athrow = (function athrow$(errType, message) {
+  /* athrow src/util.sibilant:16:0 */
+
+  return (() => {
+  	
+    return (new errType(message));
+  
+  });
+});
+var getValueOf = (function getValueOf$(o) {
+  /* get-value-of src/util.sibilant:19:0 */
+
+  return o.getValue();
+});
+var emit = R.invoker(2, "emit");
+var biCurry = R.curryN(2);
+var _ = R._;
+var feach = R.curry((function(f, a) {
+  /* src/index.sibilant:8:34 */
+
+  return a.each(f);
+}));
+var fmap = R.curry((function(f, a) {
+  /* src/index.sibilant:8:34 */
+
+  return a.map(f);
+}));
+var identity = (function identity$(a) {
+  /* identity src/util/fp.sibilant:23:0 */
+
+  return a;
+});
+var setValue = R.curry((function(v, o) {
+  /* src/index.sibilant:8:34 */
+
+  return o.value = v;
+}));
+var fs = require("fs");
 var plift = (function plift$(f) {
-  /* plift src/index.sibilant:159:0 */
+  /* plift src/util/fs.sibilant:3:0 */
 
   return ((...args) => {
   	
@@ -361,8 +438,18 @@ var stat = plift(fs.stat),
     readFile = plift(fs.readFile),
     writeFile = plift(fs.writeFile),
     readdir = plift(fs.readdir);
+var isDir = (function isDir$(c) {
+  /* is-dir src/util/fs.sibilant:15:0 */
+
+  return c.symbol === Directory.symbol;
+});
+var _directory__QUERY = ((stats) => {
+	
+  return stats.isDirectory();
+
+});
 var fillSubDir = (function fillSubDir$(p_subPath$1, seg) {
-  /* fill-sub-dir src/index.sibilant:170:0 */
+  /* fill-sub-dir src/util/fs.sibilant:19:0 */
 
   var p = p_subPath$1[0],
       subPath = p_subPath$1[1];
@@ -377,14 +464,6 @@ var fillSubDir = (function fillSubDir$(p_subPath$1, seg) {
   
   })), Path.join(subPath, seg) ];
 });
-var _directory__QUERY = ((stats) => {
-	
-  return stats.isDirectory();
-
-});
-var emit = R.invoker(2, "emit");
-var biCurry = R.curryN(2);
-var _ = R._;
 var notSingleDot = ((token) => {
 	
   return !(token === ".");
@@ -400,119 +479,38 @@ var notSingleDot = ((token) => {
   return $fpipe.split("/").filter(notSingleDot);
 
 });
-var FileSystem = extend(EventEmitter.prototype, { 
-  symbol:Symbol("FileSystem")
- });
-var isDir = (function isDir$(c) {
-  /* is-dir src/index.sibilant:201:0 */
+var reducePromise = R.curry((function(f, a) {
+  /* src/index.sibilant:8:34 */
 
-  return c.symbol === Directory.symbol;
-});
-mixin({ 
-  root:".",
-  init( root = this.root,_tree = create(TreeMap)() ){ 
-    
-      this.root = root;this._tree = _tree;
-      return this;
-    
-   },
-  _discoverNode:R.curry((function(path, seq, _tree, fs, stats) {
-    /* src/index.sibilant:197:28 */
+  return a.reduce(f, [ Promise.resolve(), "" ]);
+}));
+var timeout = (function timeout$(t) {
+  /* timeout node_modules/kit/inc/core/function-expressions.sibilant:23:8 */
+
+  return (new Promise(((success, fail) => {
+  	
+    var resolve = success,
+        reject = fail;
+    return setTimeout(success, t);
   
-    return _tree.set(seq, (function() {
-      if (stats.isDirectory()) {
-        return create(Directory)(path, fs);
-      } else {
-        return create(File)(path, fs);
-      }
-    }).call(this));
-  })),
-  _findAbsolutePath( path,root ){ 
-    
-      return Path.resolve(root, path);
-    
-   },
-  find( path = this.path,_tree = this._tree,root = this.root,_discoverNode = this._discoverNode,_findAbsolutePath = this._findAbsolutePath,relPath = _findAbsolutePath(path, root),seq = tokenize(relPath),node = findValue(seq, _tree),fs = this ){ 
-    
-      return (function() {
-        if (node) {
-          return Promise.resolve(node);
-        } else {
-          return stat(relPath).then(_discoverNode(relPath, seq, _tree, fs));
-        }
-      }).call(this);
-    
-   },
-  watch( path = this.path,opts = this.opts,root = this.root,_findAbsolutePath = this._findAbsolutePath,relPath = _findAbsolutePath(path, root),fs = this ){ 
-    
-      return Promise.all([ fs.find(path) ]).then((([ node ]) => {
-      	
-        chokidar.watch(node.path).on("all", ((eventName, changedPath, stats) => {
-        	
-          return Promise.all([ fs.find(Path.relative(root, changedPath)) ]).then((([ changedNode ]) => {
-          	
-            return node.emit(eventName, changedNode);
-          
-          }));
-        
-        })).once("error", ((err) => {
-        	
-          console.log("error on", "all", "of", "chokidar.watch(node.path)", "given", "eventName(changedPath, stats)");
-          return console.log(err);
-        
-        }));
-        return node;
-      
-      }));
-    
-   },
-  insert( path = this.path,root = this.root,_findAbsolutePath = this._findAbsolutePath,type = File,relPath = _findAbsolutePath(path, root),fs = this ){ 
-    
-      return fs.find(path).catch(((e) => {
-      	
-        return (function(seq) {
-          /* node_modules/kit/inc/macros.sibilant:162:9 */
-        
-          return (function(fileName) {
-            /* node_modules/kit/inc/macros.sibilant:162:9 */
-          
-            return seq.reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
-            	
-              return create(type)(path, fs).setValue();
-            
-            }));
-          })(seq.pop());
-        })(tokenize(path));
-      
-      }));
-    
-   },
-  set( path = this.path,v = this.v,type = File,fs = this ){ 
-    
-      return Promise.all([ fs.insert(path, null, null, type, fs) ]).then((([ node ]) => {
-      	
-        return node.setValue(v);
-      
-      }));
-    
-   },
-  delete( path = this.path ){ 
-    
-   },
-  each( f = this.f ){ 
-    
-      var itterate = R.curry(((f, file) => {
-      	
-        return (function() {
-          if (isDir(file)) {
-            return file.each(itterate(f));
-          } else {
-            return f(file);
-          }
-        }).call(this);
-      
-      }));
-      return this.find(".").then(itterate(f));
-    
-   }
- }, FileSystem);
+  })));
+});
+var onceThen = (function onceThen$(event, emitter) {
+  /* once-then src/util/promise.sibilant:11:0 */
+
+  return (new Promise(((success, fail) => {
+  	
+    var resolve = success,
+        reject = fail;
+    return emitter.once(event, success);
+  
+  })));
+});
+exports.FileSystem = FileSystem;
+exports.System = FileSystem;
+FileSystem.load = (function FileSystem$load$(rootPath) {
+  /* File-system.load src/index.sibilant:34:0 */
+
+  return create(FileSystem)(rootPath);
+});
+exports.load = FileSystem.load;
