@@ -22,8 +22,10 @@
 
 (let (( test-directories ['a 'b 'c 'd 'e 'f 'g])
       ( test-files ['t 'u 'v 'w 'x 'y 'z]))
-  (print "creating temp directory")
-  (.insert home "./temp" Directory)
+  (print "inserting temp directory")
+  (pipe (.insert home "./temp" Directory)
+        (aprint "directory was inserted,deleting")
+        (.then ))
   ;; (pipe 
   ;;       (.then (aprint "temp directory created, creating children"))
   ;;       (.then (=> (temp)
