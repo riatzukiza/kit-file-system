@@ -9,9 +9,9 @@
 
 
 (pipe (.set home  "./test.txt" test-value)
-      (.then (-> (print "test file set")))
+      (.then (aprint "test file set"))
       (.then (-> (.find home "test.txt")))
-      (.then (-> (print "file found, checking value")))
+      (.then (aprint "file found, checking value"))
       (.then (#-> (get 'string)))
       (.then (=> (s)
                  (assert (= s test-value)
@@ -24,9 +24,9 @@
       ( test-files ['t 'u 'v 'w 'x 'y 'z]))
   (print "inserting temp directory")
   (pipe (.insert home "./temp" Directory)
-        (.then (-> (print "directory was inserted,deleting")))
+        (.then (aprint "directory was inserted,deleting"))
         (.then (#-> .remove))
-        (.then (-> (.exists home "./path")))
+        (.then (-> (.exists home "./temp")))
         (.then (=> (exists?)
                    (if exists?
                        (throw "directory was not deleted")
@@ -48,4 +48,9 @@
   ;;       ;;                         (.insert temp name File)))))
   ;;       )
   )
+
+(let ((path "./temp/a/b/c/d/e"))
+  (print "testing deep nesting insertion")
+  (pipe (.insert home path Directory)
+        (.then (aprint path "was inserted"))))
 
