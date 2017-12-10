@@ -24,7 +24,7 @@
       ( test-files ['t 'u 'v 'w 'x 'y 'z]))
   (print "inserting temp directory")
   (pipe (.insert home "./temp" Directory)
-        (aprint "directory was inserted,deleting")
+        (.then (aprint "directory was inserted,deleting"))
         (.then ))
   ;; (pipe 
   ;;       (.then (aprint "temp directory created, creating children"))
