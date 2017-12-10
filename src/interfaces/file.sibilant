@@ -20,10 +20,11 @@
   (gett read-stream (.get-read-stream this))
   (gett write-stream (.get-write-stream this))
 
-  (gmth get-read-stream (path) (fs.create-read-stream path))
-  (gmth get-write-stream (path) (fs.create-write-stream path))
+  (def-generic get-read-stream (path) (fs.create-read-stream path))
+  (def-generic get-write-stream (path) (fs.create-write-stream path))
 
 
-  (gmth write ())
-  (gmth read ())
-  (gmth pipe ()))
+  (def-generic write ())
+  (def-generic read ())
+  (def-generic pipe ()))
+(export File)

@@ -21,9 +21,9 @@
 
   (def-generic find (path *tree  root   )
 
-    (var rel-path (*find-absolute-path path root)
-         seq (tokenize rel-path )
-         node (find-value seq *tree)
+    (var rel-path (*find-absolute-path path root))
+    (var seq (tokenize rel-path ))
+    (var node (find-value seq *tree)
          sys this)
 
     (if node
@@ -43,15 +43,15 @@
                    (.emit node event-name changed-node))))
       node))
 
-  (def-generic insert (path root  ( type File ) (sys this))
+  (def-generic insert (path   ( type File ) root (sys this))
     (catch (.find sys path)
-      (pipe (seq (tokenize path))
+      (pipe (tokenize path)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
             first
             (then-do (.set-value ((create type) path sys)  )))))
 
-  (def-generic set (path v ( type File ) (sys this))
-    (pipe (.insert sys path null null type sys)
+  (def-generic set (path v  ( type File ) root (sys this))
+    (pipe (.insert sys path root)
           (.then (#-> (.set-value v)))))
 
   (def-generic delete (path))
