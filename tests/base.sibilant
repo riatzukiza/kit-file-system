@@ -9,9 +9,9 @@
 
 
 (pipe (.set home  "./test.txt" test-value)
-      (.then (aprint "test file set"))
+      (.then (-> (print "test file set")))
       (.then (-> (.find home "test.txt")))
-      (.then (aprint "file found, checking value"))
+      (.then (-> (print "file found, checking value")))
       (.then (#-> (get 'string)))
       (.then (=> (s)
                  (assert (= s test-value)
@@ -24,7 +24,7 @@
       ( test-files ['t 'u 'v 'w 'x 'y 'z]))
   (print "inserting temp directory")
   (pipe (.insert home "./temp" Directory)
-        (.then (aprint "directory was inserted,deleting"))
+        (.then (-> (print "directory was inserted,deleting")))
         (.then (#-> .remove))
         (.then (-> (.exists home "./path")))
         (.then (=> (exists?)
