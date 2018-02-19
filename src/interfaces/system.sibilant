@@ -30,6 +30,10 @@
         (.resolve Promise node)
         (.then (stat rel-path)
                (*discover-node rel-path seq *tree sys))))
+  (def-generic exists (path)
+    (pipe (.find this path)
+          (.then (-> true))
+          (.catch (-> false))))
 
   (def-generic watch (path opts root )
     (var sys this)
