@@ -49,8 +49,13 @@
   ;;       )
   )
 
+;; (async-let* ((path "./temp/a/b/c/d/e")
+;;              (dir (.insert home path Directory)))
+;;             (print "directory was inserted"))
+
 (let ((path "./temp/a/b/c/d/e"))
   (print "testing deep nesting insertion")
   (pipe (.insert home path Directory)
-        (.then (aprint path "was inserted"))))
+        (.then (aprint path "was inserted"))
+        (.then (#-> ))))
 
