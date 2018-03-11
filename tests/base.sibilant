@@ -5,7 +5,7 @@
 (require! (lit File-system Directory File) "./index"
           'assert)
 (var home (.load File-system "./") )
-(var test-value "More butts")
+(var test-value "hello world")
 
 
 (pipe (.set home  "./test.txt" test-value)
