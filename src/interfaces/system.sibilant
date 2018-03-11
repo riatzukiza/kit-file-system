@@ -54,6 +54,12 @@
 
   (def-generic insert (rel   ( type File ) root (sys this))
     (catch (.find sys rel)
+
+      (var abs-path (*find-absolute-path rel root))
+      (var seq (tokenize abs-path ))
+      (var node (find-value seq *tree)
+           sys this)
+
       (pipe (tokenize rel)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
             first
