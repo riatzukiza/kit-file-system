@@ -1,6 +1,6 @@
 {
     "name": "kit-file-system",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "scripts": {
         "compile": "sibilant ./src/index.sibilant -o ./",
         "test": "bash ./scripts/test.sh"

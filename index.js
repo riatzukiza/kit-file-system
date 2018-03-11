@@ -343,9 +343,9 @@ var FileSystem = EventEmitter.define("FileSystem", {
    },
   insert( rel = this.rel,type = File,root = this.root,sys = this ){ 
     
-      return sys.find(path).catch(((e) => {
+      return sys.find(rel).catch(((e) => {
       	
-        return tokenize(path).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
+        return tokenize(rel).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
         	
           return create(type)(rel, path, sys).setValue();
         

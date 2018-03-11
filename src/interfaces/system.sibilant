@@ -53,8 +53,8 @@
       node))
 
   (def-generic insert (rel   ( type File ) root (sys this))
-    (catch (.find sys path)
-      (pipe (tokenize path)
+    (catch (.find sys rel)
+      (pipe (tokenize rel)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
             first
             (then-do (.set-value ((create type) rel path sys)  )))))
