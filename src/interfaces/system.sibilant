@@ -38,13 +38,17 @@
   (def-generic watch (path opts root )
     (var sys this)
     ;; file watching should be an entirely seperate system.
-    (print "watch method of File-system is pending depreciation")
+    ;;(print "watch method of File-system is pending depreciation")
     (async-let ((node (.find sys path )))
       (assign node.*watcher
               (pipe chokidar
                     (.watch  node.path)
                     (on  'all (event-name changed-path stats)
-                         (async-let ((changed-node (.find sys (Path.relative root changed-path ) )))
+                         (var rel (Path.relative root changed-path ))
+                         (async-let ((changed-node (.find sys rel )))
+                           (var event (lit event-name changed-node))
+                           (.emit node "*" event)
+                           (.emit node "all" event)
                            (.emit node event-name changed-node)))))
       node))
 
