@@ -316,7 +316,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
       console.log("watch method of File-system is pending depreciation");
       return Promise.all([ sys.find(path) ]).then((([ node ]) => {
       	
-        chokidar.watch(node.path).on("all", ((eventName, changedPath, stats) => {
+        node._watcher = chokidar.watch(node.path).on("all", ((eventName, changedPath, stats) => {
         	
           return Promise.all([ sys.find(Path.relative(root, changedPath)) ]).then((([ changedNode ]) => {
           	
@@ -351,7 +351,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
   set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){ 
     
       return sys.insert(path, root).then((function() {
-        /* src/interfaces/system.sibilant:59:17 */
+        /* src/interfaces/system.sibilant:60:17 */
       
         return arguments[0].setValue(v);
       }));

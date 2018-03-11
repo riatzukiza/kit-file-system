@@ -40,11 +40,12 @@
     ;; file watching should be an entirely seperate system.
     (print "watch method of File-system is pending depreciation")
     (async-let ((node (.find sys path )))
-      (pipe chokidar
-            (.watch  node.path)
-            (on  'all (event-name changed-path stats)
-                 (async-let ((changed-node (.find sys (Path.relative root changed-path ) )))
-                   (.emit node event-name changed-node))))
+      (assign node.*watcher
+              (pipe chokidar
+                    (.watch  node.path)
+                    (on  'all (event-name changed-path stats)
+                         (async-let ((changed-node (.find sys (Path.relative root changed-path ) )))
+                           (.emit node event-name changed-node)))))
       node))
 
   (def-generic insert (path   ( type File ) root (sys this))
