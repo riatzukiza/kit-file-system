@@ -46,10 +46,10 @@
                     (on  'all (event-name changed-path stats)
                          (var rel (Path.relative root changed-path ))
                          (async-let ((changed-node (.find sys rel )))
-                           (var event (lit event-name changed-node))
+                           (var event (lit (event event-name) (node changed-node)))
                            (.emit node "*" event)
                            (.emit node "all" event)
-                           (.emit node event-name changed-node)))))
+                           (.emit node event-name event)))))
       node))
 
   (def-generic insert (path   ( type File ) root (sys this))

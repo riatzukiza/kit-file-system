@@ -321,12 +321,12 @@ var FileSystem = EventEmitter.define("FileSystem", {
           return Promise.all([ sys.find(rel) ]).then((([ changedNode ]) => {
           	
             var event = { 
-              eventName,
-              changedNode
+              event:eventName,
+              node:changedNode
              };
             node.emit("*", event);
             node.emit("all", event);
-            return node.emit(eventName, changedNode);
+            return node.emit(eventName, event);
           
           }));
         
