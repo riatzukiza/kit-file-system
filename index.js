@@ -350,7 +350,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
         var sys = this;
         return tokenize(rel).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
         	
-          return create(type)(rel, path, sys).setValue();
+          return create(type)(rel, absPath, sys).setValue();
         
         }));
       
