@@ -2,7 +2,7 @@
 
 (define FS-node  Event-emitter
 
-  (init (path fs) (.call Event-emitter.init this))
+  (init (rel path fs) (.call Event-emitter.init this))
 
   (gett stats (stat this.path))
 

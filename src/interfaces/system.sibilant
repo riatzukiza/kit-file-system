@@ -1,9 +1,9 @@
 (import-namespace interface)
-(def-curried *discover-node  (path seq *tree  sys stats)
+(def-curried *discover-node  (rel path seq *tree  sys stats)
   (.set *tree seq
         (if (.is-directory stats)
-            ( (create Directory) path sys)
-            ( (create File) path sys))))
+            ( (create Directory) rel path sys)
+            ( (create File) rel path sys))))
 
 (def *find-absolute-path (path root)
   (Path.resolve  root path))
@@ -19,17 +19,17 @@
 
   (init (root (*tree ((create Tree-map) ))))
 
-  (def-generic find (path *tree  root   )
+  (def-generic find (rel *tree  root   )
 
-    (var rel-path (*find-absolute-path path root))
-    (var seq (tokenize rel-path ))
+    (var abs-path (*find-absolute-path rel root))
+    (var seq (tokenize abs-path ))
     (var node (find-value seq *tree)
          sys this)
 
     (if node
         (.resolve Promise node)
-        (.then (stat rel-path)
-               (*discover-node rel-path seq *tree sys))))
+        (.then (stat abs-path)
+               (*discover-node rel abs-path seq *tree sys))))
   (def-generic exists (path)
     (pipe (.find this path)
           (.then (-> true))
@@ -52,7 +52,7 @@
       (pipe (tokenize path)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
             first
-            (then-do (.set-value ((create type) path sys)  )))))
+            (then-do (.set-value ((create type) rel path sys)  )))))
 
   (def-generic set (path v  ( type File ) root (sys this))
     (pipe (.insert sys path root)

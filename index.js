@@ -13,9 +13,6 @@
 ;
 var R = require("ramda");
 var { 
-  Interface
- } = require("kit-interface");
-var { 
   create,
   extend,
   mixin,
@@ -46,9 +43,9 @@ var {
   bubble
  } = require("kit-events");
 var FSNode = EventEmitter.define("FSNode", { 
-  init( path = this.path,fs = this.fs ){ 
+  init( rel = this.rel,path = this.path,fs = this.fs ){ 
     
-      this.path = path;this.fs = fs;
+      this.rel = rel;this.path = path;this.fs = fs;
       EventEmitter.init.call(this);
       return this;
     
@@ -250,14 +247,14 @@ var Directory = FSNode.define("Directory", {
    }
  });
 exports.Directory = Directory;
-var _discoverNode = R.curry((function(path, seq, _tree, sys, stats) {
+var _discoverNode = R.curry((function(rel, path, seq, _tree, sys, stats) {
   /* src/index.sibilant:8:34 */
 
   return _tree.set(seq, (function() {
     if (stats.isDirectory()) {
-      return create(Directory)(path, sys);
+      return create(Directory)(rel, path, sys);
     } else {
-      return create(File)(path, sys);
+      return create(File)(rel, path, sys);
     }
   }).call(this));
 }));
@@ -285,17 +282,17 @@ var FileSystem = EventEmitter.define("FileSystem", {
       return this;
     
    },
-  find( path = this.path,_tree = this._tree,root = this.root ){ 
+  find( rel = this.rel,_tree = this._tree,root = this.root ){ 
     
-      var relPath = _findAbsolutePath(path, root);
-      var seq = tokenize(relPath);
+      var absPath = _findAbsolutePath(rel, root);
+      var seq = tokenize(absPath);
       var node = findValue(seq, _tree),
           sys = this;
       return (function() {
         if (node) {
           return Promise.resolve(node);
         } else {
-          return stat(relPath).then(_discoverNode(relPath, seq, _tree, sys));
+          return stat(absPath).then(_discoverNode(rel, absPath, seq, _tree, sys));
         }
       }).call(this);
     
@@ -344,7 +341,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
       	
         return tokenize(path).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
         	
-          return create(type)(path, sys).setValue();
+          return create(type)(rel, path, sys).setValue();
         
         }));
       

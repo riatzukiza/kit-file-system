@@ -2,10 +2,10 @@
 (include "kit/header")
 (import-namespace kit)
 
-(require! (lit File-system Directory File) "../index"
+(require! (lit File-system Directory File) "./index"
           'assert)
 (var home (.load File-system "./") )
-(var test-value "Butts")
+(var test-value "More butts")
 
 
 (pipe (.set home  "./test.txt" test-value)
