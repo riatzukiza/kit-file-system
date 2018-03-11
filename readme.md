@@ -24,3 +24,39 @@ file system meta protocol library, for managing directory trees as magical littl
                  (assert (= s test-value)
                          "file was not set with appropriate value"))))
 ```
+
+same thing but the compiled js 
+
+```js
+
+var {FileSystem, Directory, File} = require("./index"),
+    assert = require("assert");
+var home = FileSystem.load("./");
+
+var testValue = "hello world";
+
+home.set("./test.txt", testValue)
+    .then((function(b, ...others) {
+        /* node_modules/kit/inc/console.sibilant:10:8 */
+
+        console.log("test file set", b, ...others);
+        return b;
+    })).then((() => {
+
+        return home.find("test.txt");
+
+    })).then((function(b, ...others) {
+        /* node_modules/kit/inc/console.sibilant:10:8 */
+
+        console.log("file found, checking value", b, ...others);
+        return b;
+    })).then((function() {
+        /* tests/base.sibilant:15:13 */
+
+        return arguments[0].string;
+    })).then(((s) => {
+
+        return assert(s === testValue, "file was not set with appropriate value");
+
+    }));
+```
