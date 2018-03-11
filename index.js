@@ -347,8 +347,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
       	
         var absPath = _findAbsolutePath(rel, root);
         var seq = tokenize(absPath);
-        var node = findValue(seq, _tree),
-            sys = this;
+        var sys = this;
         return tokenize(rel).reduce(fillSubDir, [ Promise.resolve(), "./" ])[0].then(((nil) => {
         	
           return create(type)(rel, path, sys).setValue();
@@ -361,7 +360,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
   set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){ 
     
       return sys.insert(path, root).then((function() {
-        /* src/interfaces/system.sibilant:70:17 */
+        /* src/interfaces/system.sibilant:69:17 */
       
         return arguments[0].setValue(v);
       }));
