@@ -62,10 +62,12 @@
       (pipe (tokenize rel)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
             first
-            (then-do (.set-value ((create type) rel abs-path sys)  )))))
+            (then-do (.set-value ((create type) rel abs-path sys)
+                                 )
+                     ))))
 
   (def-generic set (path v  ( type File ) root (sys this))
-    (pipe (.insert sys path root)
+    (pipe (.insert sys path type root sys)
           (.then (#-> (.set-value v)))))
 
   (def-generic delete (path))

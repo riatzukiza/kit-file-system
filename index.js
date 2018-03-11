@@ -359,8 +359,8 @@ var FileSystem = EventEmitter.define("FileSystem", {
    },
   set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){ 
     
-      return sys.insert(path, root).then((function() {
-        /* src/interfaces/system.sibilant:69:17 */
+      return sys.insert(path, type, root, sys).then((function() {
+        /* src/interfaces/system.sibilant:71:17 */
       
         return arguments[0].setValue(v);
       }));
