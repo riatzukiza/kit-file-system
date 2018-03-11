@@ -341,7 +341,7 @@ var FileSystem = EventEmitter.define("FileSystem", {
       }));
     
    },
-  insert( path = this.path,type = File,root = this.root,sys = this ){ 
+  insert( rel = this.rel,type = File,root = this.root,sys = this ){ 
     
       return sys.find(path).catch(((e) => {
       	

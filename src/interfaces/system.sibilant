@@ -52,7 +52,7 @@
                            (.emit node event-name event)))))
       node))
 
-  (def-generic insert (path   ( type File ) root (sys this))
+  (def-generic insert (rel   ( type File ) root (sys this))
     (catch (.find sys path)
       (pipe (tokenize path)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
