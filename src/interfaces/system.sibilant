@@ -57,8 +57,7 @@
 
       (var abs-path (*find-absolute-path rel root))
       (var seq (tokenize abs-path ))
-      (var node (find-value seq *tree)
-           sys this)
+      (var sys this)
 
       (pipe (tokenize rel)
             (.reduce  fill-sub-dir [(Promise.resolve) "./"])
