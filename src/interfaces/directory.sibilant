@@ -38,6 +38,9 @@
 
   (gett sub-system ((create File-system) this.path))
 
+  (def is-dir? () true)
+  (def is-file? () false)
+
 
   (gett keys (readdir this.path))
 

@@ -60,6 +60,11 @@ var FSNode = EventEmitter.define("FSNode", {
       return Path.basename(this.path);
     
    },
+  isDir__QUERY(  ){ 
+    
+      throw (new Error("This method must be over written by a sub type."))
+    
+   },
   watch( path = this.path,fs = this.fs ){ 
     
       return fs.watch(path);
@@ -117,6 +122,16 @@ var File = FSNode.define("File", {
   get writeStream(  ){ 
     
       return this.getWriteStream();
+    
+   },
+  isDir__QUERY(  ){ 
+    
+      return false;
+    
+   },
+  isFile__QUERY(  ){ 
+    
+      return true;
     
    },
   getReadStream( path = this.path ){ 
@@ -220,6 +235,16 @@ var Directory = FSNode.define("Directory", {
   get subSystem(  ){ 
     
       return create(FileSystem)(this.path);
+    
+   },
+  isDir__QUERY(  ){ 
+    
+      return true;
+    
+   },
+  isFile__QUERY(  ){ 
+    
+      return false;
     
    },
   get keys(  ){ 
