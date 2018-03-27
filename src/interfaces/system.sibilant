@@ -56,11 +56,9 @@
     (catch (.find sys rel)
 
       (var abs-path (*find-absolute-path rel root))
-      (var seq (tokenize abs-path ))
-      (var sys this)
 
       (pipe (tokenize rel)
-            (.reduce  fill-sub-dir [(Promise.resolve) "./"])
+            (.reduce  fill-sub-dir [(Promise.resolve) root])
             first
             (then-do (.set-value ((create type) rel abs-path sys)
                                  )
