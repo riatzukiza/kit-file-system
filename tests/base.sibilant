@@ -23,10 +23,10 @@
 (let (( test-directories ['a 'b 'c 'd 'e 'f 'g])
       ( test-files ['t 'u 'v 'w 'x 'y 'z]))
   (print "inserting temp directory")
-  (pipe (.insert home "./temp" Directory)
+  (pipe (.insert home "./temp/moose/taco/bazzle" Directory)
         (.then (aprint "directory was inserted,deleting"))
         (.then (#-> .remove))
-        (.then (-> (.exists home "./temp")))
+        (.then (-> (.exists home "./temp/moose/taco/bazzle")))
         (.then (=> (exists?)
                    (if exists?
                        (throw "directory was not deleted")
