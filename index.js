@@ -1,5 +1,3 @@
-
-
 (function(a, b, c) {
   /* node_modules/kit/inc/core/defs.sibilant:53:9 */
 
@@ -12,7 +10,7 @@
 
 ;
 var R = require("ramda");
-var { 
+var {
   create,
   extend,
   mixin,
@@ -20,7 +18,7 @@ var {
   cond,
   partiallyApplyAfter
  } = require("kit/js/util");
-var { 
+var {
   cond,
   create,
   extend,
@@ -31,198 +29,198 @@ var {
     assert = require("assert"),
     chokidar = require("chokidar"),
     fs = require("fs"),
-    { 
+    {
   TreeMap
  } = require("tree-kit");
-var { 
+var {
   Interface
  } = require("kit-interface");
-var { 
+var {
   EventEmitter,
   emit,
   bubble
  } = require("kit-events");
-var FSNode = EventEmitter.define("FSNode", { 
-  init( rel = this.rel,path = this.path,fs = this.fs ){ 
-    
+var FSNode = EventEmitter.define("FSNode", {
+  init( rel = this.rel,path = this.path,fs = this.fs ){
+
       this.rel = rel;this.path = path;this.fs = fs;
       EventEmitter.init.call(this);
       return this;
-    
+
    },
-  get stats(  ){ 
-    
+  get stats(  ){
+
       return stat(this.path);
-    
+
    },
-  get name(  ){ 
-    
+  get name(  ){
+
       return Path.basename(this.path);
-    
+
    },
-  isDir__QUERY(  ){ 
-    
+  isDir__QUERY(  ){
+
       throw (new Error("This method must be over written by a sub type."))
-    
+
    },
-  watch( path = this.path,fs = this.fs ){ 
-    
+  watch( path = this.path,fs = this.fs ){
+
       return fs.watch(path);
-    
+
    }
  });
-var File = FSNode.define("File", { 
-  get value(  ){ 
-    
+var File = FSNode.define("File", {
+  get value(  ){
+
       return readFile(this.path);
-    
+
    },
-  set value( v ){ 
-    
+  set value( v ){
+
       return Promise.resolve(v).then(((v) => {
-      	
+
         return writeFile(this.path, v);
-      
+
       }));
-    
+
    },
-  get string(  ){ 
-    
+  get string(  ){
+
       return readFile(this.path, "utf8");
-    
+
    },
-  set string( s ){ 
-    
+  set string( s ){
+
       return Promise.resolve(s).then(((s) => {
-      	
+
         return writeFile(this.path, s);
-      
+
       }));
-    
+
    },
-  getValue( path = this.path ){ 
-    
+  getValue( path = this.path ){
+
       return readFile(path);
-    
+
    },
-  setValue( value = "",path = this.path ){ 
-    
+  setValue( value = "",path = this.path ){
+
       return writeFile(path, value).then(((nil) => {
-      	
+
         return this;
-      
+
       }));
-    
+
    },
-  get readStream(  ){ 
-    
+  get readStream(  ){
+
       return this.getReadStream();
-    
+
    },
-  get writeStream(  ){ 
-    
+  get writeStream(  ){
+
       return this.getWriteStream();
-    
+
    },
-  isDir__QUERY(  ){ 
-    
+  isDir__QUERY(  ){
+
       return false;
-    
+
    },
-  isFile__QUERY(  ){ 
-    
+  isFile__QUERY(  ){
+
       return true;
-    
+
    },
-  getReadStream( path = this.path ){ 
-    
+  getReadStream( path = this.path ){
+
       return fs.createReadStream(path);
-    
+
    },
-  getWriteStream( path = this.path ){ 
-    
+  getWriteStream( path = this.path ){
+
       return fs.createWriteStream(path);
-    
+
    },
-  write(  ){ 
-    
+  write(  ){
+
    },
-  read(  ){ 
-    
+  read(  ){
+
    },
-  pipe(  ){ 
-    
+  pipe(  ){
+
    }
  });
 exports.File = File;
-var Directory = FSNode.define("Directory", { 
-  set( rel = this.rel,value = this.value,type = File,fs = this.fs,path = this.path ){ 
-    
+var Directory = FSNode.define("Directory", {
+  set( rel = this.rel,value = this.value,type = File,fs = this.fs,path = this.path ){
+
       return fs.set(Path.join(rel, path), value, type);
-    
+
    },
-  get( rel = this.rel,fs = this.fs,path = this.path ){ 
-    
-      return fs.find(Path.join(path, rel));
-    
+  get( rel = this.rel,fs = this.fs,path = this.path ){
+
+      return fs.find(Path.join(this.rel, rel));
+
    },
-  setValue(  ){ 
-    
+  setValue(  ){
+
       return mkdir(this.path).then(((nil) => {
-      	
+
         return this;
-      
+
       }));
-    
+
    },
-  getValue(  ){ 
-    
+  getValue(  ){
+
       return readdir(this.path).then(((nil) => {
-      	
+
         return this;
-      
+
       }));
-    
+
    },
-  insert( rel = this.rel,type = File,fs = this.fs,path = this.path ){ 
-    
+  insert( rel = this.rel,type = File,fs = this.fs,path = this.path ){
+
       return fs.insert(Path.join(rel, path), type);
-    
+
    },
-  each( f = this.f,children = this.children ){ 
-    
+  each( f = this.f,children = this.children ){
+
       return children.then(feach(f));
-    
+
    },
-  map( f = this.f,children = this.children ){ 
-    
+  map( f = this.f,children = this.children ){
+
       return children.then(fmap(f));
-    
+
    },
-  recursiveRemove( path = this.path ){ 
-    
+  recursiveRemove( path = this.path ){
+
       return this.each(cond(is.file, (($fpipe) => {
-      	
+
         return $fpipe.delete();
-      
+
       }), is.dir, (($fpipe) => {
-      	
+
         return $fpipe.recursiveRemove();
-      
+
       }))).then((($fpipe) => {
-      	
+
         return $fpipe.remove();
-      
+
       }));
-    
+
    },
-  removeEmptyDirectory( path = this.path ){ 
-    
+  removeEmptyDirectory( path = this.path ){
+
       return rmdir(path);
-    
+
    },
-  remove( path = this.path,recursive__QUERY = false ){ 
-    
+  remove( path = this.path,recursive__QUERY = false ){
+
       return (function() {
         if (recursive__QUERY) {
           return this.recursiveRemove(path);
@@ -230,45 +228,45 @@ var Directory = FSNode.define("Directory", {
           return this.removeEmptyDirectory(path);
         }
       }).call(this);
-    
+
    },
-  get subSystem(  ){ 
-    
+  get subSystem(  ){
+
       return create(FileSystem)(this.path);
-    
+
    },
-  isDir__QUERY(  ){ 
-    
+  isDir__QUERY(  ){
+
       return true;
-    
+
    },
-  isFile__QUERY(  ){ 
-    
+  isFile__QUERY(  ){
+
       return false;
-    
+
    },
-  get keys(  ){ 
-    
+  get keys(  ){
+
       return readdir(this.path);
-    
+
    },
-  get getChild(  ){ 
-    
+  get getChild(  ){
+
       return ((d) => {
-      	
+
         return this.get(d);
-      
+
       });
-    
+
    },
-  get children(  ){ 
-    
+  get children(  ){
+
       return this.keys.then((($fpipe) => {
-      	
+
         return Promise.all($fpipe.map(this.getChild));
-      
+
       }));
-    
+
    }
  });
 exports.Directory = Directory;
@@ -299,16 +297,16 @@ var itterate = R.curry((function(f, file) {
     }
   }).call(this);
 }));
-var FileSystem = EventEmitter.define("FileSystem", { 
+var FileSystem = EventEmitter.define("FileSystem", {
   root:".",
-  init( root = this.root,_tree = create(TreeMap)() ){ 
-    
+  init( root = this.root,_tree = create(TreeMap)() ){
+
       this.root = root;this._tree = _tree;
       return this;
-    
+
    },
-  find( rel = this.rel,_tree = this._tree,root = this.root ){ 
-    
+  find( rel = this.rel,_tree = this._tree,root = this.root ){
+
       var absPath = _findAbsolutePath(rel, root);
       var seq = tokenize(absPath);
       var node = findValue(seq, _tree),
@@ -320,104 +318,104 @@ var FileSystem = EventEmitter.define("FileSystem", {
           return stat(absPath).then(_discoverNode(rel, absPath, seq, _tree, sys));
         }
       }).call(this);
-    
+
    },
-  exists( path = this.path ){ 
-    
+  exists( path = this.path ){
+
       return this.find(path).then((() => {
-      	
+
         return true;
-      
+
       })).catch((() => {
-      	
+
         return false;
-      
+
       }));
-    
+
    },
-  watch( path = this.path,opts = this.opts,root = this.root ){ 
-    
+  watch( path = this.path,opts = this.opts,root = this.root ){
+
       var sys = this;
       return Promise.all([ sys.find(path) ]).then((([ node ]) => {
-      	
+
         node._watcher = chokidar.watch(node.path).on("all", ((eventName, changedPath, stats) => {
-        	
+
           var rel = Path.relative(root, changedPath);
           return Promise.all([ sys.find(rel) ]).then((([ changedNode ]) => {
-          	
-            var event = { 
+
+            var event = {
               event:eventName,
               node:changedNode
              };
             node.emit("*", event);
             node.emit("all", event);
             return node.emit(eventName, event);
-          
+
           }));
-        
+
         })).once("error", ((err) => {
-        	
+
           console.log("error on", "all", "of", "chokidar.watch(node.path)", "given", "eventName(changedPath, stats)");
           return console.log(err);
-        
+
         }));
         return node;
-      
+
       }));
-    
+
    },
-  insert( rel = this.rel,type = File,root = this.root,sys = this ){ 
-    
+  insert( rel = this.rel,type = File,root = this.root,sys = this ){
+
       return sys.find(rel).catch(((e) => {
-      	
+
         var absPath = _findAbsolutePath(rel, root);
         return tokenize(rel).reduce(fillSubDir, [ Promise.resolve(), root ])[0].then(((nil) => {
-        	
+
           return create(type)(rel, absPath, sys).setValue();
-        
+
         }));
-      
+
       }));
-    
+
    },
-  set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){ 
-    
+  set( path = this.path,v = this.v,type = File,root = this.root,sys = this ){
+
       return sys.insert(path, type, root, sys).then((function() {
         /* src/interfaces/system.sibilant:69:17 */
-      
+
         return arguments[0].setValue(v);
       }));
-    
+
    },
-  delete( path = this.path ){ 
-    
+  delete( path = this.path ){
+
    },
-  each( f = this.f ){ 
-    
+  each( f = this.f ){
+
       return this.find(".").then(itterate(f));
-    
+
    }
  });
 var testing__QUERY = true;
-var is = { 
-  string( v ){ 
-    
+var is = {
+  string( v ){
+
       return typeof v === "string";
-    
+
    },
-  empty( value ){ 
-    
+  empty( value ){
+
       return 0 === value.length;
-    
+
    }
  };
 var athrow = (function athrow$(errType, message) {
   /* athrow src/util.sibilant:16:0 */
 
   return (() => {
-  	
+
     return (new errType(message));
-  
+
   });
 });
 var getValueOf = (function getValueOf$(o) {
@@ -453,13 +451,13 @@ var plift = (function plift$(f) {
   /* plift src/util/fs.sibilant:3:0 */
 
   return ((...args) => {
-  	
+
     return (new Promise(((success, fail) => {
-    	
+
       var resolve = success,
           reject = fail;
       return f.apply(this, [ ...args, ((err, data) => {
-      	
+
         return (function() {
           if (err) {
             return reject(err);
@@ -467,11 +465,11 @@ var plift = (function plift$(f) {
             return resolve(data);
           }
         }).call(this);
-      
+
       }) ]);
-    
+
     })));
-  
+
   });
 });
 var stat = plift(fs.stat),
@@ -486,7 +484,7 @@ var isDir = (function isDir$(c) {
   return c.symbol === Directory.symbol;
 });
 var _directory__QUERY = ((stats) => {
-	
+
   return stats.isDirectory();
 
 });
@@ -497,27 +495,27 @@ var fillSubDir = (function fillSubDir$(p_subPath$1, seg) {
       subPath = p_subPath$1[1];
 
   return [ p.then(((nil) => {
-  	
+
     return mkdir(subPath);
-  
+
   })).catch(((e) => {
-  	
-    
-  
+
+
+
   })), Path.join(subPath, seg) ];
 });
 var notSingleDot = ((token) => {
-	
+
   return !(token === ".");
 
 }),
     findValue = ((seq, _tree) => {
-	
+
   return _tree.find(seq).value;
 
 }),
     tokenize = (($fpipe) => {
-	
+
   return $fpipe.split("/").filter(notSingleDot);
 
 });
@@ -530,22 +528,22 @@ var timeout = (function timeout$(t) {
   /* timeout node_modules/kit/inc/core/function-expressions.sibilant:23:8 */
 
   return (new Promise(((success, fail) => {
-  	
+
     var resolve = success,
         reject = fail;
     return setTimeout(success, t);
-  
+
   })));
 });
 var onceThen = (function onceThen$(event, emitter) {
   /* once-then src/util/promise.sibilant:11:0 */
 
   return (new Promise(((success, fail) => {
-  	
+
     var resolve = success,
         reject = fail;
     return emitter.once(event, success);
-  
+
   })));
 });
 exports.FileSystem = FileSystem;
