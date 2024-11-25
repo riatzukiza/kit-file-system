@@ -289,9 +289,9 @@ var _findAbsolutePath = (function _findAbsolutePath$(path, root) {
 var itterate = R.curry((function(f, file) {
   /* src/index.sibilant:8:34 */
 
-  return (function() {
+  return (async function() {
     if (isDir(file)) {
-      return file.each(itterate(f));
+        return Promise.all(await file.map(itterate(f)));
     } else {
       return f(file);
     }
